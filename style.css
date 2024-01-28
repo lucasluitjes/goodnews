@@ -3,11 +3,23 @@ img {
   margin-left: auto;
   margin-right: auto;
   width: 40%;
+  margin-bottom: 1rem;
 }
 
 h1 {
   text-align: center;
+  margin-bottom: 1rem;
 }
 main.container {
-  padding-top: 18px;
+/*  padding-top: 0px;*/
+}
+
+article {
+  margin-bottom: 3rem;
+}
+
+
+:root {
+  --spacing: 0.25rem;
+  --font-size: 22px;
 }
