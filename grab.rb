@@ -111,6 +111,27 @@ def generate_html(positive_articles)
   end
 end
 
+def generate_rss(positive_articles)
+  xml = Builder::XmlMarkup.new(indent: 2)
+
+  xml.rss("version" => "2.0") do
+    xml.channel do
+      xml.title "Good news"
+      xml.description "Inject a bit of hope in your news diet. AI-curated and not manually reviewed, so the occasional mistake may pop up."
+      xml.link "https://goodnews.luitjes.it"
+      xml.language "en-us"
+      positive_articles.sort_by(&:date).reverse.each do |article|
+        xml.item do
+          xml.title article.title
+          xml.description article.description
+          xml.pubDate article.date.to_s
+          xml.link article.link
+          xml.guid article.link
+        end
+      end
+    end
+  end
+end
 
 positive_articles = []
 
@@ -123,6 +144,7 @@ RSS_URLS.each do |url|
 end
 
 result_dir = "/var/www/goodnews.luitjes.it/html"
+IO.write(File.join(result_dir, "rss.xml"), generate_rss(positive_articles))
 IO.write(File.join(result_dir, "index.html"), generate_html(positive_articles))
 #puts "HTML page generated with positive news articles."
 File.open(DB_PATH, 'w') {|f| f.write DB.to_json}
