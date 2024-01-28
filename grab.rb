@@ -122,7 +122,8 @@ RSS_URLS.each do |url|
   end
 end
 
-IO.write("/var/www/goodnews.luitjes.it/html/index.html", generate_html(positive_articles))
+result_dir = "/var/www/goodnews.luitjes.it/html"
+IO.write(File.join(result_dir, "index.html"), generate_html(positive_articles))
 #puts "HTML page generated with positive news articles."
 File.open(DB_PATH, 'w') {|f| f.write DB.to_json}
 
