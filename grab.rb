@@ -97,6 +97,10 @@ def generate_html(positive_articles)
               xml.li url
             end
           end
+          xml.p do
+            xml.text! "Source available on "
+            xml.a "github.", "href" => "https://github.com/lucasluitjes/goodnews"
+          end
         end
       end
     end
