@@ -58,6 +58,7 @@ def generate_html(positive_articles)
 
   xml.html do
     xml.head do
+      xml.link('rel' => 'alternate', 'type' => 'application/rss+xml', 'href' => 'rss.xml', 'title' => 'RSS feed')
       xml.link('rel' => 'stylesheet', 'type' => 'text/css', 'href' => 'pico.classless.min.css')
       xml.link('rel' => 'stylesheet', 'type' => 'text/css', 'href' => 'style.css')
       xml.title "Good news"
