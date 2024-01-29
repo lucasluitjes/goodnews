@@ -35,6 +35,10 @@ def cached_chat str
 end
 
 def chat str
+  $counter ||= 0
+  $counter += 1
+  raise if $counter > 200
+  raise if str.size > 9999
   #puts "$"
   sleep 0.5
   result = OpenAI::Client.new.chat(
