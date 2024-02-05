@@ -19,7 +19,8 @@ require 'dotenv/load'
 RSS_URLS = [
   "https://phys.org/rss-feed/",
   "https://medicalxpress.com/rss-feed/",
-  "https://techxplore.com/rss-feed/"
+  "https://techxplore.com/rss-feed/",
+  "https://news.mit.edu/rss/research"
 ]
 
 DB_PATH = "db.json"
@@ -80,16 +81,26 @@ def generate_html(positive_articles)
 
       xml.main("class" => "container") do 
         positive_articles.sort_by(&:date).reverse.each do |article|
-          xml.article do
-            xml.header do
-              xml.a(article.title, 'href' => article.link)
-              xml.text! "(#{URI(article.link).host})"
+          begin
+            xml.article do
+              xml.header do
+                xml.a(article.title, 'href' => article.link)
+                begin
+                  xml.text! "(#{URI(article.link).host})"
+                rescue
+                  xml.text! "(unable to determine origin)"
+                end
+              end
+              xml.p article.description
+              xml.footer do 
+                local = TZInfo::Timezone.get('Europe/Amsterdam').to_local(article.date).to_s
+                xml.small local
+              end
             end
-            xml.p article.description
-            xml.footer do 
-              local = TZInfo::Timezone.get('Europe/Amsterdam').to_local(article.date).to_s
-              xml.small local
-            end
+          rescue
+            puts "#{article.title} (#{article.link})"
+            puts "#{$@.first}: #{$!.message} (#{$!.class})", $@.drop(1).map{|s| "\t#{s}"}
+            next
           end
         end
       end
@@ -141,10 +152,16 @@ end
 positive_articles = []
 
 RSS_URLS.each do |url|
-  raw = `curl -s "#{url}"`
-  feed = RSS::Parser.parse(raw)
-  feed.items.each do |item|
-    positive_articles << item if is_positive_news?(item)
+  begin
+    raw = `curl -s "#{url}"`
+    feed = RSS::Parser.parse(raw)
+    feed.items.each do |item|
+      positive_articles << item if is_positive_news?(item)
+    end
+  rescue
+    puts url
+    puts "#{$@.first}: #{$!.message} (#{$!.class})", $@.drop(1).map{|s| "\t#{s}"}
+    next
   end
 end
 
