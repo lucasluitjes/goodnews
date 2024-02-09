@@ -91,7 +91,7 @@ def generate_html(positive_articles)
                   xml.text! "(unable to determine origin)"
                 end
               end
-              xml.p article.description
+              xml.p article.description&.gsub(/<[^>]+>/, '')
               xml.footer do 
                 local = TZInfo::Timezone.get('Europe/Amsterdam').to_local(article.date).to_s
                 xml.small local
@@ -139,7 +139,7 @@ def generate_rss(positive_articles)
       positive_articles.sort_by(&:date).reverse.each do |article|
         xml.item do
           xml.title article.title
-          xml.description article.description
+          xml.description article.description&.gsub(/<[^>]+>/, '')
           xml.pubDate article.date.to_s
           xml.link article.link
           xml.guid article.link
